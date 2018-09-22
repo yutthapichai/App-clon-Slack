@@ -6,28 +6,33 @@ import App from './App'
 import router from './router'
 import firebase from 'firebase/app'
 import store from './store'
+import auth from 'firebase/auth'
 
 Vue.config.productionTip = false;
 
 
 // Initialize Firebase
 var config = {
-  apiKey: 'AIzaSyBK9k1DzpfsF2hqo8j7Vfc5uuSaxvHFeSU',
-  authDomain: 'vueclonslack.firebaseapp.com',
-  databaseURL: 'https://vueclonslack.firebaseio.com',
-  projectId: 'vueclonslack',
-  storageBucket: 'vueclonslack.appspot.com',
-  messagingSenderId: '123113339769'
+    apiKey: 'AIzaSyBK9k1DzpfsF2hqo8j7Vfc5uuSaxvHFeSU',
+    authDomain: 'vueclonslack.firebaseapp.com',
+    databaseURL: 'https://vueclonslack.firebaseio.com',
+    projectId: 'vueclonslack',
+    storageBucket: 'vueclonslack.appspot.com',
+    messagingSenderId: '123113339769'
 };
 firebase.initializeApp(config);
 
 window.firebase = firebase;
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  store,
-  components: { App },
-  template: '<App/>'
-})
+
+
+const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+    store.dispatch("setUser_Act", user)
+    new Vue({
+        el: '#app',
+        router,
+        store,
+        components: { App },
+        template: '<App/>'
+    })
+});
 
