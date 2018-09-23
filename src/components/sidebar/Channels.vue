@@ -87,7 +87,7 @@ export default {
       this.channelsRef.child(key).update(newChannel)  //insert data
       .then(() => {
 
-        this.channel = ''
+        this.new_channel = ''
         $('#channelModal').modal('hide')
 
       }).catch( err => this.errors.push(err.message))
