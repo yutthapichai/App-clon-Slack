@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="mt-3">
+    <div class="mt-3 mb-5">
       <div v-for="(message, key) in messages" :key="key">
         <div class="media">
           <img :src="message.user.avatar" alt="avatar" height="50" class="align-self-start mr-3">
 
           <div class="media-body">
             <h6 class="mt-0">
-              <a href="#" class="text-info">{{ message.user.name }}</a> - {{ message.timestamp | fromNow }}
+              <a href="#" class="text-info">{{ message.user.name }}</a> - <small class="text-muted">{{ message.timestamp | fromNow }}</small>
             </h6>
             <p :class="{'self_message': selfMessage(message.user)}">{{ message.chat }}</p>
           </div>
@@ -17,7 +17,7 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
+import moment from 'moment' // แปลงเวลาวินาที เป็น เวลามนุษย์
 import { mapGetters } from 'vuex'
 
 export default {

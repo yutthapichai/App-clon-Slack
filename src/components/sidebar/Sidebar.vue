@@ -11,6 +11,9 @@
         <hr style="border: 0.5px solid;" class="text-light">
         <Channels />
 
+        <hr style="border: 0.5px solid;" class="text-light">
+        <Users />
+
     </div>
 </template>
 
@@ -18,15 +21,24 @@
 import auth from 'firebase/auth'
 import { mapGetters } from 'vuex'
 import Channels from './Channels'
-
+import Users from './Users'
+import database from 'firebase/database'
 export default {
   name: 'sidebar',
-  components: { Channels },
+  components: { Channels, Users },
+  data()
+  {
+    return {
+      presenceRef: firebase.database().ref('presence')
+    }
+  },
   computed:{
     ...mapGetters(['currentUser'])
   },
   methods: {
     logout() {
+      // delete data on database********************
+      this.presenceRef.child(this.currentUser.uid).remove()
       firebase.auth().signOut()
       this.$store.dispatch('setUser_Act', null)
       this.$router.push('/login')

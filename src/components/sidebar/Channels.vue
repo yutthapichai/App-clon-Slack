@@ -84,7 +84,7 @@ export default {
       let key = this.channelsRef.push().key // random key
       console.log('new key: ', key);
       let newChannel = {id:key, name: this.new_channel} //mininum info needed to create a new channel
-      this.channelsRef.child(key).update(newChannel)  //insert data
+      this.channelsRef.child(key).update(newChannel)  //insert data ******************
       .then(() => {
 
         this.new_channel = ''
@@ -102,7 +102,7 @@ export default {
     },
     addListeners()
     {
-      //fetch data
+      //fetch data *****************
       this.channelsRef.on('child_added', snapshot => {
         //console.log('listening chanelsRef on child_added:', snapshot.val())
         this.channels.push(snapshot.val())

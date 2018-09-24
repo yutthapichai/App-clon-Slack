@@ -54,7 +54,7 @@ export default {
       .then(res => {
         // console.log(res.user)
         this.loading = false
-        this.saveUserToUsersRef(res.user)
+        this.saveUserToUsersRef(res.user)  // insert data **************
         // dispatch setUser action
         this.$store.dispatch('setUser_Act', res.user)
         // then redirect user to /
@@ -68,6 +68,7 @@ export default {
     },
     saveUserToUsersRef(user)
     {
+      // insert data ***********
       return this.usersRef.child(user.uid).set({
         name: user.displayName,
         avatar: user.photoURL
@@ -83,6 +84,7 @@ export default {
       .then(res => {
         // console.log(res.user)
         this.loading = false
+        this.saveUserToUsersRef(res.user) // insert data **************
         // dispatch setUser action
         this.$store.dispatch('setUser_Act', res.user)
         // then redirect user to /

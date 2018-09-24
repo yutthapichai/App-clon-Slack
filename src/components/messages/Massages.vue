@@ -38,9 +38,13 @@ export default {
   methods: {
     addListeners()
     {
-      // fetch data
+      // fetch data*************************************
       this.messagesRef.child(this.currentChannel.id).on('child_added',(snapshot) => {
         this.messages.push(snapshot.val())
+        // scoll message up or down
+        this.$nextTick(() => {
+          $("html, body").scrollTop($(document).height())
+        })
       })
     },
     detachListeners()

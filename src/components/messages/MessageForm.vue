@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="messageform">
-      <form>
+      <form @submit.prevent="sendMessage">
         <div class="input-group mb-3">
           <input v-model.trim="message" type="text"
           class="form-control mt-3 bg-light border border-info" autofocus
@@ -53,10 +53,13 @@ export default {
       if(this.currentChannel !== null)
       {
         if(this.message.length > 0)
-        { // insert style object
+        { // insert style object**************************
           this.$parent.messagesRef.child(this.currentChannel.id).push().set(newMessage)
           .then(() => {
-            //
+            // scoll message up or down
+            this.$nextTick(() => {
+              $("html, body").scrollTop($(document).height())
+            })
           })
           .catch(err => {
             this.errors.push(err.message)
