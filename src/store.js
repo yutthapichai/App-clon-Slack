@@ -6,14 +6,16 @@ Vue.use(Vuex)
 // create state that hold data
 const state = {
   currentUser: null,
-  currentChannel: null
+  currentChannel: null,
+  isPrivate: false
 }
 
 // update state data though mutation
 const mutations = {
 
   SET_USER_MU :(state, user) => state.currentUser = user,
-  SET_CURRENT_CHANNEL_MU: (state,channel) => state.currentChannel = channel
+  SET_CURRENT_CHANNEL_MU: (state,channel) => state.currentChannel = channel,
+  SET_PRIVATE_MU: (state, isPrivate) => state.isPrivate = isPrivate
 
 }
 
@@ -21,7 +23,8 @@ const mutations = {
 const actions = {
 
   setUser_Act: (state , user) => state.commit('SET_USER_MU', user),
-  setCurrentChannelAct: ({commit}, channel) => commit('SET_CURRENT_CHANNEL_MU', channel)
+  setCurrentChannelAct: ({commit}, channel) => commit('SET_CURRENT_CHANNEL_MU', channel),
+  setPrivateAct: ({ commit}, isPrivate) => commit('SET_PRIVATE_MU', isPrivate)
 
 }
 
@@ -29,7 +32,8 @@ const actions = {
 const getters = {
   // this is function
   currentUser: state => state.currentUser,
-  currentChannel: state => state.currentChannel
+  currentChannel: state => state.currentChannel,
+  isPrivate: state => state.isPrivate
 
 }
 

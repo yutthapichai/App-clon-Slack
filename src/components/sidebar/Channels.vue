@@ -98,6 +98,7 @@ export default {
     },
     changeChannel(channel)
     {
+      this.$store.dispatch('setPrivateAct', false)
       this.$store.dispatch("setCurrentChannelAct", channel)
     },
     addListeners()
