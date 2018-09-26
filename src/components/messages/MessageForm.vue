@@ -54,7 +54,7 @@ export default {
       {
         if(this.message.length > 0)
         { // insert style object**************************
-          this.$parent.messagesRef.child(this.currentChannel.id).push().set(newMessage)
+          this.$parent.getMessagesRef().child(this.currentChannel.id).push().set(newMessage)
           .then(() => {
             // scoll message up or down
             this.$nextTick(() => {

@@ -2,18 +2,27 @@
   <div>
     <div>
       <h4 class="text-light">Users</h4>
-      <ul class="nav flex-column">
-        <li v-for="user in users" :key="user.uid" @click.prevent="changeChannel(user)">
-          <span :class="{'btn btn-light btn-block my-2': isActive(user)}">
+
+        <div class="mt-3">
+          <button v-for="user in users" :key="user.uid"
+          class="list-group-item-info list-group-item list-group-item-action"
+          :class="{ 'active': isActive(user)}"
+          @click.prevent="changeChannel(user)"
+          type="button">
+
+          <span :class="{'fa fa-circle text-success': isOnline(user), 'fa fa-circle text-secondary': !isOnline(user)}"></span>
+
+          <span>
             <img :src="user.avatar" alt="profile"
             :class="{'rounded-circle border border-success':isOnline(user),'rounded-circle border border-secondary': !isOnline(user) }"
             height="20">
-            <span :class="{'text-success pointer': isOnline(user), 'text-secondary pointer': !isOnline(user)}">
+            <span :class="{'text-light': isActive(user)}">
               {{ user.name }}
               </span>
           </span>
-        </li>
-      </ul>
+          </button>
+        </div>
+
     </div>
   </div>
 </template>
@@ -119,6 +128,3 @@ export default {
   }
 }
 </script>
-<style>
-.pointer {cursor: pointer;}
-</style>
