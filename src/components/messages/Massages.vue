@@ -56,7 +56,7 @@ export default {
         let message = snapshot.val()
 
         message['id'] = snapshot.key
-        console.log(snapshot.key)
+        // console.log(snapshot.key)
         this.messages.push(message)
         // scoll message up or down
         this.$nextTick(() => {
