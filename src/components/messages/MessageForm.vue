@@ -21,7 +21,7 @@
             </div>
 
             <div class="input-group-append">
-              <button @click.prevent="openFileModal" class="btn btn-secondary mt-3" type="button">Upload</button>
+              <button @click.prevent="openFileModal" :disabled="uploadState == 'uploading'" class="btn btn-secondary mt-3" type="button">Upload</button>
             </div>
         </div>
       </form>
@@ -136,6 +136,8 @@ export default {
         this.errors.push(error.message)
         this.uploadState = 'error'
         this.uploadTask = null
+        // reset form
+        this.$refs.file_modal.resetForm()
       }, () => {
         // upload finished
         this.uploadState = 'done'
@@ -170,6 +172,15 @@ export default {
     openFileModal(){
       $("#fileModal").appendTo("body").modal('show')
       console.log('openFileModel')
+    },
+    mounted(){
+      $("html, body").scrollTop($(document).height())
+    },
+    beforeDestroy(){
+      if(this.uploadTask !== null){
+        this.uploadTask.cancel()
+        this.uploadTask = null
+      }
     }
   }
 }
@@ -184,7 +195,7 @@ export default {
     z-index:100;
     color:rgb(255, 255, 255);
     text-align: center;
-    margin-bottom: -20px;
+    margin-bottom: -16px;
     margin-left: 33.3%;
   }
 
