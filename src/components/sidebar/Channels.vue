@@ -69,6 +69,7 @@ export default {
       channel: null,
       channels: [],
       errors: [],
+      messagesRef: firebase.database().ref('messages'),
       channelsRef: firebase.database().ref('channels') // ref in table in database firebase
     }
   },
@@ -113,7 +114,39 @@ export default {
           this.channel = this.channels[0] // set the first one as current channel
           this.$store.dispatch("setCurrentChannelAct", this.channel) // dispath current channel to store
         }
+        //add count listener to manage the notifications
+        this.addCountListener(snapshot.key)
       })
+    },
+
+    addCountListener(channelId){
+      this.massagesRef.child(channelId).on('value', snapshot => {
+        this.handleNotifications(channelId, this.currentChanel.id, this.notifCount, snapshot)
+      })
+    },
+    handleNotifications(channelId, currentChannelId, notifCount, snapshot){
+      let lastTotal = 0
+      // find if channelId is already added to notifCount[]
+      let index = notifCount.findIndex(el => el.id === channelId)
+      // if found
+      if(index != -1){
+        if(channelId !== currentChannelId){
+          lastTotal = notifCount[index].total
+
+          if(snapshot.numChildren() - lastTotal > 0){
+            notifCount[index].notif = snapshot.numChildren() - lastTotal
+          }
+        }
+        notifCount[index].lastKnowTotal = snapshot
+      }else {
+        // push to notifCount[]
+        notifCount.push({
+          id: channelId,
+          total: snapshot.numChildren(),
+          lastKnowTotal: snapshot.numChildren(),
+          notif: 0
+        })
+      }
     },
     detachListeners()
     {
