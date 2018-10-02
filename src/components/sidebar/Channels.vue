@@ -11,7 +11,7 @@
       :class="{ 'active': setActiveChannel(channel)}"
       @click="changeChannel(channel)"
       type="button">
-        {{ channel.name }}
+        {{ channel.name }} <span v-if="getNotification(channel) > 0 && channel.id !== currentChannel.id" class="float-right">{{ getNotification(channel) }}</span>
       </button>
     </div>
 
@@ -51,21 +51,28 @@
 <script>
 import database from 'firebase/database'
 import { mapGetters} from 'vuex'
+import mixin from '../../mixins.js'
 export default {
   name: 'channels',
 
   computed: {
-    ...mapGetters(['currentChannel']),
+    ...mapGetters(['currentChannel', 'isPrivate']),
     hasError()
     {
       return this.errors.length > 0
     }
   },
-
+  watch: {
+    isPrivate(){
+      if(this.isPrivate) this.resetNotifications()
+    }
+  },
+  mixins: [mixin],
   data()
   {
     return {
       new_channel: '',
+      notifCount: [],
       channel: null,
       channels: [],
       errors: [],
@@ -75,12 +82,10 @@ export default {
   },
 
   methods: {
-    openModal()
-    {
+    openModal(){
       $('#channelModal').appendTo("body").modal('show')
     },
-    addChannel()
-    {
+    addChannel(){
       this.errors = []
       let key = this.channelsRef.push().key // random key
       console.log('new key: ', key);
@@ -93,17 +98,25 @@ export default {
 
       }).catch( err => this.errors.push(err.message))
     },
-    setActiveChannel(channel)
-    {
+    setActiveChannel(channel){
       return channel.id === this.currentChannel.id
     },
-    changeChannel(channel)
-    {
+    changeChannel(channel){
+      // reset notifications
+      this.resetNotifications()
       this.$store.dispatch('setPrivateAct', false)
       this.$store.dispatch("setCurrentChannelAct", channel)
+      // set channel
+      this.channel = channel
     },
-    addListeners()
-    {
+    resetNotifications(){
+      let index = this.notifCount.findIndex(el => el.id === this.channel.id)
+      if(index !== -1){
+        this.notifCount[index].total = this.notifCount[index].lastKnowTotal
+        this.notifCount[index].notif = 0
+      }
+    },
+    addListeners(){
       //fetch data *****************
       this.channelsRef.on('child_added', snapshot => {
         //console.log('listening chanelsRef on child_added:', snapshot.val())
@@ -115,16 +128,25 @@ export default {
           this.$store.dispatch("setCurrentChannelAct", this.channel) // dispath current channel to store
         }
         //add count listener to manage the notifications
-        this.addCountListener(snapshot.key)
+        this.addCountListener(snapshot.key) // show key channels
       })
+    },
+    getNotification(channel){
+      let notif = 0
+      this.notifCount.forEach(el => {
+        if(el.id === channel.id){
+          notif = el.notif
+        }
+      })
+      return notif
     },
 
     addCountListener(channelId){
-      this.massagesRef.child(channelId).on('value', snapshot => {
-        this.handleNotifications(channelId, this.currentChanel.id, this.notifCount, snapshot)
+      this.messagesRef.child(channelId).on('value', snapshot => {
+        this.handleNotifications(channelId, this.currentChannel.id, this.notifCount, snapshot)
       })
     },
-    handleNotifications(channelId, currentChannelId, notifCount, snapshot){
+/*     handleNotifications(channelId, currentChannelId, notifCount, snapshot){
       let lastTotal = 0
       // find if channelId is already added to notifCount[]
       let index = notifCount.findIndex(el => el.id === channelId)
@@ -137,7 +159,7 @@ export default {
             notifCount[index].notif = snapshot.numChildren() - lastTotal
           }
         }
-        notifCount[index].lastKnowTotal = snapshot
+        notifCount[index].lastKnowTotal = snapshot.numChildren()
       }else {
         // push to notifCount[]
         notifCount.push({
@@ -147,10 +169,12 @@ export default {
           notif: 0
         })
       }
-    },
-    detachListeners()
-    {
+    }, */
+    detachListeners(){
       this.channelsRef.off()
+      this.channels.forEach(el => {
+        this.messagesRef.child(el.id).off()
+      })
     }
   },
 

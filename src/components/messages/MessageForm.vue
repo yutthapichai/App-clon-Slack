@@ -97,7 +97,7 @@ export default {
       }
     },
     createMessage(fileUrl = null){
-      let message = {
+      let messages = {
         chat: this.message,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         user: {
@@ -109,13 +109,13 @@ export default {
 
       if(fileUrl == null){
         // either send message with content
-        message['chat'] = this.message
+        messages['chat'] = this.message
       }else {
         // or send the message with image
-        message['image'] = fileUrl
+        messages['image'] = fileUrl
       }
 
-      return message
+      return messages
     },
     uploadFile(file, metadata){
       // console.log('file :',file, 'meta :', metadata)
