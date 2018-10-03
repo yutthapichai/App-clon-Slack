@@ -26,7 +26,7 @@
         </div>
       </form>
       <!-- file upload -->
-      <FileModal ref="file_modal" />
+      <FileModal ref="filemodal" />
     </div>
   </div>
 </template>
@@ -52,7 +52,7 @@ export default {
   computed: {
     ...mapGetters(['currentChannel', 'currentUser', 'isPrivate']),
 
-    // upload state
+    // upload state show on progress bar
     uploadLabel(){
       switch(this.uploadState){
         case 'uploading': return 'Uploading in progress'
@@ -69,15 +69,6 @@ export default {
   methods: {
     sendMessage(){
       //construct new message object
-/*       let newMessage = {
-        chat: this.message,
-        timestamp: firebase.database.ServerValue.TIMESTAMP,
-        user: {
-          name: this.currentUser.displayName,
-          avatar: this.currentUser.photoURL,
-          id: this.currentUser.uid
-        }
-      } */
       // use some validate
       if(this.currentChannel !== null){
         if(this.message.length > 0){
@@ -98,7 +89,6 @@ export default {
     },
     createMessage(fileUrl = null){
       let messages = {
-        chat: this.message,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         user: {
           name: this.currentUser.displayName,
@@ -123,7 +113,7 @@ export default {
       let pathToupload = this.currentChannel.id
       let ref = this.$parent.getMessagesRef()
       let filePath = this.getPath() + '/' + uuidV4() + '.jpg'
-
+      // insert file to storage firebase
       this.uploadTask = this.storageRef.child(filePath).put(file, metadata)
       this.uploadState = "uploading"
 
@@ -131,27 +121,30 @@ export default {
         // upload in progress
         let percent = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
         $(".progress-bar").css("width", percent + '%')
-      }, error => {
+      }, error => { // paramitor 2
         // error
         this.errors.push(error.message)
         this.uploadState = 'error'
         this.uploadTask = null
-        // reset form
-        this.$refs.file_modal.resetForm()
-      }, () => {
+        // reset form by $refs refer from name 'filemodal' call function resetForm
+        this.$refs.filemodal.resetForm()
+      }, () => {  // paramitor 3
         // upload finished
         this.uploadState = 'done'
-        // reset form
-        this.$refs.file_modal.resetForm()
-        // recover the url of file
+        // reset form by $refs refer from name 'filemodal' call function resetForm
+        this.$refs.filemodal.resetForm()
+        // fetch url image from file storage firebase
         let fileUrl = this.uploadTask.snapshot.ref.getDownloadURL().then(fileUrl => {
           this.sendFileMessage(fileUrl, ref, pathToupload)
+          //console.log('finished upload file :', fileUrl)
         })
       })
     },
     sendFileMessage(fileUrl, ref, pathToupload){
-      //
+      // pathToupload is channel id at table private or channel message
+      // insert file to database firebase
       ref.child(pathToupload).push().set(this.createMessage(fileUrl)).then(() => {
+        this.uploadState = null // hide tab bar progress image
         this.$nextTick(() => {
           $("html, body").scrollTop($(document).height())
         })
@@ -160,7 +153,8 @@ export default {
       })
     },
     // folder direct to store file
-    getPath(){
+    getPath()
+    {
       if(this.isPrivate)
       {
         return 'chat/private/' + this.currentChannel.id
@@ -169,14 +163,17 @@ export default {
       }
     },
 
-    openFileModal(){
+    openFileModal()
+    {
       $("#fileModal").appendTo("body").modal('show')
       console.log('openFileModel')
     },
-    mounted(){
+    mounted()
+    {
       $("html, body").scrollTop($(document).height())
     },
-    beforeDestroy(){
+    beforeDestroy()
+    {
       if(this.uploadTask !== null){
         this.uploadTask.cancel()
         this.uploadTask = null

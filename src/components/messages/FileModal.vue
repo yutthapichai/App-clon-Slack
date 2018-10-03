@@ -37,7 +37,7 @@ export default {
   {
     return {
       file: null,
-      authorized: ['image/jpeg','image/jpg','image/png']
+      authorized: ['image/jpeg','image/jpg','image/png']  // type image object
     }
   },
   methods:{
@@ -74,6 +74,7 @@ export default {
     {
       $('.form').trigger('reset')
       this.file = null
+      //console.log('from reset form')
     }
   }
 }
