@@ -88,11 +88,11 @@ export default {
     addChannel(){
       this.errors = []
       let key = this.channelsRef.push().key // random key
-      console.log('new key: ', key);
+      // console.log('new key: ', key);
       let newChannel = {id:key, name: this.new_channel} //mininum info needed to create a new channel
-      this.channelsRef.child(key).update(newChannel)  //insert data ******************
+      this.channelsRef.child(key).update(newChannel)  // insert data ******************
       .then(() => {
-
+        this.$store.dispatch("setCurrentChannelAct", newChannel)
         this.new_channel = ''
         $('#channelModal').modal('hide')
 
@@ -120,15 +120,16 @@ export default {
       //fetch data *****************
       this.channelsRef.on('child_added', snapshot => {
         //console.log('listening chanelsRef on child_added:', snapshot.val())
-        this.channels.push(snapshot.val())
+        this.channels.push(snapshot.val())  //Loop print {id: val, name:val}
 
         if(this.channels.length > 0)  //set current channel
         {
-          this.channel = this.channels[0] // set the first one as current channel
+          this.channel = this.channels[0] // print index at 0 is {id: val, name:val} set the first one as current channel
           this.$store.dispatch("setCurrentChannelAct", this.channel) // dispath current channel to store
         }
         //add count listener to manage the notifications
-        this.addCountListener(snapshot.key) // show key channels
+        // will check every times
+        this.addCountListener(snapshot.key) // show all id of channels
       })
     },
     getNotification(channel){
@@ -144,13 +145,14 @@ export default {
     addCountListener(channelId){
       this.messagesRef.child(channelId).on('value', snapshot => {
         this.handleNotifications(channelId, this.currentChannel.id, this.notifCount, snapshot)
+        // console.log('this.notifCount :', this.notifCount.length === 0 ? '0' : 'have')
       })
     },
 /*     handleNotifications(channelId, currentChannelId, notifCount, snapshot){
       let lastTotal = 0
       // find if channelId is already added to notifCount[]
       let index = notifCount.findIndex(el => el.id === channelId)
-      // if found
+      // if found === 0
       if(index != -1){
         if(channelId !== currentChannelId){
           lastTotal = notifCount[index].total
@@ -160,11 +162,11 @@ export default {
           }
         }
         notifCount[index].lastKnowTotal = snapshot.numChildren()
-      }else {
+      }else { // if not found index === -1
         // push to notifCount[]
         notifCount.push({
           id: channelId,
-          total: snapshot.numChildren(),
+          total: snapshot.numChildren(), // จำนวนข้อความทั้งหมด
           lastKnowTotal: snapshot.numChildren(),
           notif: 0
         })

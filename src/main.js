@@ -13,12 +13,7 @@ Vue.config.productionTip = false;
 
 // Initialize Firebase
 var config = {
-    apiKey: 'AIzaSyBK9k1DzpfsF2hqo8j7Vfc5uuSaxvHFeSU',
-    authDomain: 'vueclonslack.firebaseapp.com',
-    databaseURL: 'https://vueclonslack.firebaseio.com',
-    projectId: 'vueclonslack',
-    storageBucket: 'vueclonslack.appspot.com',
-    messagingSenderId: '123113339769'
+ //
 };
 firebase.initializeApp(config);
 

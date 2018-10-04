@@ -4,7 +4,9 @@ export default {
       let lastTotal = 0
       // find if channelId is already added to notifCount[]
       let index = notifCount.findIndex(el => el.id === channelId)
-      // if found
+      console.log("channelId :", index);
+      console.log("notifCount :", notifCount);
+      // if found has not == -1
       if (index != -1) {
         if (channelId !== currentChannelId) {
           lastTotal = notifCount[index].total
@@ -13,7 +15,7 @@ export default {
             notifCount[index].notif = snapshot.numChildren() - lastTotal
           }
         }
-        notifCount[index].lastKnowTotal = snapshot.numChildren()
+        notifCount[index].lastKnowTotal = snapshot.numChildren() // จำนวนข้อความทั้งหมด
       } else {
         // push to notifCount[]
         notifCount.push({
